@@ -18,6 +18,8 @@ function setup() {
   percentLoadedDiv = createDiv(' ');
   percentLoadedDiv.position(20, windowHeight - 20);
   percentLoadedDiv.style('background-color', '#22222');
+
+  initHilbert(width, height);
 }
 
 function draw() {
