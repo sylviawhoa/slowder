@@ -30,7 +30,7 @@ function draw() {
     noStroke();
     textSize(24);
     textAlign(CENTER);
-    text('Drag an image onto the canvas.', width/2, height/2);
+    text('Drag an image here.', width/2, height/2);
     noLoop();
   } else if (stateNum === 1) {
 
@@ -85,11 +85,17 @@ function gotFile(file) {
     hiddenCanvas.pixels = ctx.getImageData(0,0,width,height).data;
 
     background(20);
-    console.log(hiddenCanvas.pixels.length);
+    // console.log(hiddenCanvas.pixels.length);
     
-    stateNum = 1;
-    loop();
+    // stateNum = 1;
+    // loop();
+
+    hilbertCurve();
   } else {
     console.log('Not an image file!');
   }
+}
+
+function keyPressed() {
+  hilbertCurve();
 }
