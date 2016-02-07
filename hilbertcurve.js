@@ -17,7 +17,6 @@ function initHilbert(_w, _h) {
 function drawL1(hilbert,H4,L4){
 	for(var i = 3*H4-1; i > H4-1; i--){
 		hilbert._data[i][L4] = 1;
-		console.log('set to 1 a');
 	}
 	return hilbert;
 }
@@ -25,7 +24,6 @@ function drawL1(hilbert,H4,L4){
 function drawL2(hilbert,H4,L4){
 	for(var j = L4-1; j < 3*L4-1; j++){
 		hilbert._data[H4][j] = 1;
-		console.log('set to 1 b: ', H4, j);
 	}
 	return hilbert;
 }
@@ -33,7 +31,6 @@ function drawL2(hilbert,H4,L4){
 function drawL3(hilbert,H4,L4){
 	for(var k = H4-1; k < 3*H4-1; k++){
 		hilbert._data[k][3*L4] = 1;
-		console.log('set to 1 c');
 	}
 	return hilbert;
 }
@@ -150,40 +147,28 @@ function displayLeftandRightShoes(squareunicornmatrix,hilbert,n,itnum,h,sw){
 function hilbertCurve() {
 	//basecase
 	var itnum = 0;
+	var maxIter = 1;
+
 	horseshoe = drawHorseshoe(hilbert,h,sw);
 	hilbert = displayLeftandRightShoes(horseshoe,hilbert,h,itnum,h,sw);
 
 	squareunicornmatrix = horseshoe;
+
+	hilbert = drawFourSmall(squareunicornmatrix, hilbert, h);
 	//induction
 
-	// return 'done';
-	// for(var i=0;i<5;i++){
-	// 	// hilbert = math.zeros(w,h);
-	// 	// horseshoe = drawHorseshoe(hilbert,h,sw);
-
-	// 	// animate
-	// 	// function() {
-
-	// 	// }
-
-	// 	squareunicornmatrix = drawUnicornShoe(squareunicornmatrix,hilbert,h,itnum,h,sw);
-	// 	hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum,h,sw);
-	// 	itnum++;
-
-	// 	//then print hilbert
-	// }
-	// drawHilbert(hilbert);
-
-
 	// animate
+	// noLoop();
+
 	function animateHilbert() {
+		// alert('drawing');
 		squareunicornmatrix = drawUnicornShoe(squareunicornmatrix,hilbert,h,itnum,h,sw);
 		hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum,h,sw);
 		itnum++;
-		if (itnum > 1) return;
+		if (itnum > maxIter) return;
 		drawHilbert(hilbert);
 
-		setTimeout(animateHilbert, 1000, false);
+		setTimeout(animateHilbert, 2000, false);
 	}
 
 	animateHilbert();
@@ -199,10 +184,10 @@ function drawHilbert(hilbert) {
 		for (var j = 0; j < n; j++) {
 			if (hilbert._data[i][j] === 1) {
 				// console.log(i, j);
-				if (hiddenCanvas.pixels) {
-					var c = hiddenCanvas.get(i, j, 1, 1);
-					fill(c);
-				}
+				// if (hiddenCanvas.pixels) {
+				// 	var c = hiddenCanvas.get(i, j, 1, 1);
+				// 	fill(c);
+				// }
 				rect(j, i, 1, 1);
 			}
 		}
