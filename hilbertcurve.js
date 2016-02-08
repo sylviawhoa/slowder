@@ -172,7 +172,7 @@ function displayLeftandRightShoes(squareunicornmatrix,hilbert,n,itnum,h,sw){
 	return hilbert;
 }
 
-function hilbertCurve() {
+function hilbertCurve(origPixels) {
 	//basecase
 	var itnum = 0;
 	var maxIter = 9;
@@ -199,7 +199,7 @@ function hilbertCurve() {
 	if (itnum > maxIter) return;
 
 
-	drawHilbert(hilbert);
+	drawHilbert(hilbert, origPixels);
 
 		setTimeout(animateHilbert, 2000, false);
 	}
@@ -207,24 +207,45 @@ function hilbertCurve() {
 	animateHilbert();
 }
 
-function drawHilbert(hilbert) {
-	background(0);
+function drawHilbert(hilbert, origPixels) {
+	// background(0);
+	
+	image(img, 0, 0, width, height);
+	// var newPixels = cnvCtx.getImageData(0,0,width,height).data;
+	var newPixels = new Uint8ClampedArray(origPixels);
+	var newImageData = new ImageData(newPixels, width, height);
+
 	noStroke();
-	fill(255, 0, 0);
+	fill(0, 0, 0);
 	var m = hilbert.size()[0]; // 512
 	var n = hilbert.size()[1]; // 1024
+
+	var numBlack = 0;
 	for (var i = 0; i < m; i++) {
 		for (var j = 0; j < n; j++) {
-			if (hilbert._data[i][j] === 1) {
+			if (hilbert._data[i][j] === 0) {
 				// console.log(i, j);
 				// if (hiddenCanvas.pixels) {
 				// 	var c = hiddenCanvas.get(i, j, 1, 1);
 				// 	fill(c);
 				// }
-				rect(j, i, 1, 1);
+				// for(var k=0; k<3; k++){
+				newImageData.data[n*4*i+4*j+0]=0;
+				newImageData.data[n*4*i+4*j+1]=0;
+				newImageData.data[n*4*i+4*j+2]=0;
+				// }
+				numBlack++;
+				//hiddenCanvas.pixels[i]
+				// rect(j, i, 1, 1);
 			}
 		}
 	}
+
+	// show new pixels
+	console.log('numblack: ' + numBlack);
+
+	cnvCtx.putImageData(newImageData, 0, 0);
+	console.log('here!');
 	return 'done drawing';
 }
 

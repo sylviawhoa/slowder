@@ -1,14 +1,18 @@
 var hiddenCanvas;
 var visibleCanvas;
+var cnvCtx;
 var stateNum = 0
 var pIndex = 0;
 var percentLoadedDiv;
+var img;
 
 function setup() {
   pixelDensity(1);
 
   // create canvas
   visibleCanvas = createCanvas(1024, 512);
+  cnvCtx = visibleCanvas.elt.getContext('2d');
+
   background(100);
   noStroke();
 
@@ -76,7 +80,7 @@ function gotFile(file) {
   if (file.type === 'image') {
     // Create an image DOM element but don't show it
 
-    var img = createImg(file.data).hide();
+    img = createImg(file.data).hide();
     hiddenCanvas = createGraphics(width, height);
     
     hiddenCanvas.image(img, 0, 0, width, height);
@@ -84,18 +88,20 @@ function gotFile(file) {
     var ctx = hiddenCanvas.elt.getContext('2d');
     hiddenCanvas.pixels = ctx.getImageData(0,0,width,height).data;
 
-    background(20);
+//hiddenCanvas.pixels is an array with image
+
+    // background(20);
+    // image(img, 0, 0, width, height);
     // console.log(hiddenCanvas.pixels.length);
     
     // stateNum = 1;
     // loop();
 
-    hilbertCurve();
+    hilbertCurve(hiddenCanvas.pixels);
+
+
+
   } else {
     console.log('Not an image file!');
   }
-}
-
-function keyPressed() {
-  hilbertCurve();
 }
