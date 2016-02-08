@@ -49,9 +49,15 @@ function drawHorseshoe(hilbert,h,sw){
 
 //function transpose a square nxn matrix with top corner at height = th, width = tw
 function transposeSquareMatrix(matrix,hilbert,n,th,tw){
+	var orig = math.zeros(n,n);
+	for(var i=0; i<n; i++){
+		for(var j=0; j<n; j++){
+			orig._data[i][j] = matrix._data[i][j];
+		}
+	}
 	for(var i =0; i <n; i++){
 		for(var j=0; j<n; j++){
-			hilbert._data[th+i][tw+j] = matrix._data[th+j][tw+i]
+			hilbert._data[th+i][tw+j] = orig._data[j][i]
 		}
 	}
 	return hilbert;
@@ -59,29 +65,41 @@ function transposeSquareMatrix(matrix,hilbert,n,th,tw){
 
 //function to rotate right on square nxn matrix with top corner at height = th, width = tw
 function reflectHorizMatrix(matrix,hilbert,n,th,tw){
+	var orig = math.zeros(n,n);
 	for(var i=0; i<n; i++){
 		for(var j=0; j<n; j++){
-			hilbert._data[th+i][tw+n-j-1] = matrix._data[i][j];
+			orig._data[i][j] = matrix._data[th+i][tw+j];
+		}
+	}
+	for(var i=0; i<n; i++){
+		for(var j=0; j<n; j++){
+			hilbert._data[th+i][tw+n-j] = orig._data[i][j];
 		}	
 	}
 	return hilbert;
 }
 
 function rotateRight(matrix,hilbert,n,th,tw){
-	reflectHorizMatrix(transposeSquareMatrix(matrix,hilbert,n,th,tw));
+	hilbert = transposeSquareMatrix(matrix,hilbert,n,th,tw);
+	reflectHorizMatrix(hilbert,hilbert,n,th,tw);
 	return hilbert;
 }
 
-
-
 //split into 4 quadrants and draw four unicornshoes
 function drawFourSmall(matrix,hilbert,n){
+	var orig = math.zeros(n,n);
+	for(var i=0; i<n; i++){
+		for(var j=0; j<n; j++){
+			orig._data[i][j] = matrix._data[i][j];
+		}
+	}
+
 	for(var i=0; i<n/2; i++){
 		for(var j=0; j<n/2; j++){
-			hilbert._data[i][j]=matrix._data[2*i][2*j];
-			hilbert._data[i+n/2][j]=matrix._data[2*i][2*j];
-			hilbert._data[i][j+n/2]=matrix._data[2*i][2*j];
-			hilbert._data[i+n/2][j+n/2]=matrix._data[2*i][2*j];
+			hilbert._data[i][j]=orig._data[2*i][2*j];
+			hilbert._data[i+n/2][j]=orig._data[2*i][2*j];
+			hilbert._data[i][j+n/2]=orig._data[2*i][2*j];
+			hilbert._data[i+n/2][j+n/2]=orig._data[2*i][2*j];
 		}
 	}
 
@@ -89,55 +107,65 @@ function drawFourSmall(matrix,hilbert,n){
 }
 
 function rotateQuadrants(foursmall,hilbert,n){
+	var orig = math.zeros(n,n);
+	for(var i=0; i<n; i++){
+		for(var j=0; j<n; j++){
+			orig._data[i][j] = foursmall._data[i][j];
+		}
+	}	
 //lower left - rotateRight
-	rotateRight(foursmall,hilbert,n/2,n/2,0);
+	rotateRight(orig,hilbert,n/2,n/2,0);
 // top left - do nothing
 
 // top right - reflectHorizMatrix
-	reflectHorizMatrix(foursmall,hilbert,n/2,0,0);
+	hilbert = reflectHorizMatrix(orig,hilbert,n/2,0,0);
 
 // lower right - transposeSquareMatrix	
-	transposeSquareMatrix(foursmall,hilbert,n/2,n/2,n/2);
+	transposeSquareMatrix(orig,hilbert,n/2,n/2,n/2);
+	return hilbert;
 }
 
 
 function drawUnicornShoe(squareunicornmatrix,hilbert,n,itnum,h,sw){
-	//h,sw are height and width of output
-	//n -- should = h?
-	//drawFourSmall
 	var foursmall = drawFourSmall(squareunicornmatrix,hilbert,n);
 	//rotateQuadrants
 	rotateQuadrants(foursmall,hilbert,n);
 
-	//connectshoes
+//connectshoes
 	size = math.pow(2,itnum);
-	for(var i=0;i < h/(4*size); i++){
+	for(var i=0;i <= h/(4*size); i++){
 		var a = h/2-h/(8*size)+i;
 		var b = h/(8*size);
 		hilbert._data[a][b] = 1;
 	}
-	for(var i=0;i < h/(4*size); i++){
+	for(var i=0;i <= h/(4*size); i++){
 		hilbert._data[h/2-h/(8*size)][sw/2-h/(8*size)+i] = 1;
 	}
-	for(var i=0;i < h/(4*size); i++){
+	for(var i=0;i <= h/(4*size); i++){
 		hilbert._data[h/2-h/(8*size)+i][sw-h/(8*size)] = 1;
 	}
+
+	
 	return hilbert;
 }
 
 function displayLeftandRightShoes(squareunicornmatrix,hilbert,n,itnum,h,sw){
 
-	//leftshoe
-	// drawUnicornShoe(squareunicornmatrix,hilbert,n,itnum,h,sw);
-	//rightshoe
-	reflectHorizMatrix(squareunicornmatrix,hilbert,n,0,sw);
+	//leftshoe - already there
 
+	//rightshoe 
+	for(var i = 0; i<n; i++){
+		for(var j=0; j<n; j++){
+			hilbert._data[i][2*sw-j]= hilbert._data[i][j];
+		}
+	}
+
+	//
 	//connect left and right shoe
-	// console.log(h/(4*size));
 	var size = math.pow(2,itnum);
 
 	for(var i=0; i < h/(2*size); i++){
-		var a = 3*h/(4*size);
+		var a = h - h/(4*size);
 		var b = sw- h/(4*size) + i;
 		hilbert._data[a][b] = 1;
 	}
@@ -147,26 +175,31 @@ function displayLeftandRightShoes(squareunicornmatrix,hilbert,n,itnum,h,sw){
 function hilbertCurve() {
 	//basecase
 	var itnum = 0;
-	var maxIter = 1;
+	var maxIter = 9;
 
-	horseshoe = drawHorseshoe(hilbert,h,sw);
-	hilbert = displayLeftandRightShoes(horseshoe,hilbert,h,itnum,h,sw);
-
-	squareunicornmatrix = horseshoe;
-
-	hilbert = drawFourSmall(squareunicornmatrix, hilbert, h);
-	//induction
+	squareunicornmatrix = math.zeros(h,h);
+	hilbert = math.zeros(h,2*sw);
+	squareunicornmatrix = drawHorseshoe(hilbert,h,sw);
 
 	// animate
-	// noLoop();
-
 	function animateHilbert() {
 		// alert('drawing');
-		squareunicornmatrix = drawUnicornShoe(squareunicornmatrix,hilbert,h,itnum,h,sw);
-		hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum,h,sw);
-		itnum++;
-		if (itnum > maxIter) return;
-		drawHilbert(hilbert);
+		hilbert = math.zeros(h,2*sw);	
+		hilbert = drawUnicornShoe(squareunicornmatrix,hilbert,h,itnum,h,sw);
+		for(var i=0; i<h; i++){
+			for(var j=0; j<h; j++){
+				squareunicornmatrix._data[i][j]= hilbert._data[i][j];
+			}
+		}
+
+		hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum+1,h,sw);
+
+
+	itnum++;
+	if (itnum > maxIter) return;
+
+
+	drawHilbert(hilbert);
 
 		setTimeout(animateHilbert, 2000, false);
 	}
