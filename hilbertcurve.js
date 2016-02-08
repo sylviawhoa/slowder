@@ -176,32 +176,50 @@ function hilbertCurve(origPixels) {
 	//basecase
 	var itnum = 0;
 	var maxIter = 9;
+	var basecase = 0;
 
-	squareunicornmatrix = math.zeros(h,h);
-	hilbert = math.zeros(h,2*sw);
-	squareunicornmatrix = drawHorseshoe(hilbert,h,sw);
+	// squareunicornmatrix = math.zeros(h,h);
+	// hilbert = math.zeros(h,2*sw);
+	// squareunicornmatrix = drawHorseshoe(hilbert,h,sw);
 
 	// animate
 	function animateHilbert() {
-		// alert('drawing');
-		hilbert = math.zeros(h,2*sw);	
-		hilbert = drawUnicornShoe(squareunicornmatrix,hilbert,h,itnum,h,sw);
-		for(var i=0; i<h; i++){
-			for(var j=0; j<h; j++){
-				squareunicornmatrix._data[i][j]= hilbert._data[i][j];
+		
+		if(basecase ==0){	
+			squareunicornmatrix = math.zeros(h,h);
+			horseshoe = math.zeros(h,h);
+			hilbert = math.zeros(h,2*sw);
+			horseshoe = drawHorseshoe(hilbert,h,sw);
+			for(var i=0; i<h; i++){
+				for(var j=0; j<h; j++){
+					squareunicornmatrix._data[i][j]= horseshoe._data[i][j];
+				}
 			}
+			hilbert = displayLeftandRightShoes(horseshoe,hilbert,h,0,h,sw);
+		}
+	
+		if(basecase > 0){
+			hilbert = math.zeros(h,2*sw);	
+			hilbert = drawUnicornShoe(squareunicornmatrix,hilbert,h,itnum-1,h,sw);
+			for(var i=0; i<h; i++){
+				for(var j=0; j<h; j++){
+					squareunicornmatrix._data[i][j]= hilbert._data[i][j];
+				}
+			}
+			hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum,h,sw);
 		}
 
-		hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum+1,h,sw);
+		itnum++;
+		basecase++;
+		if (itnum > maxIter) return;
+		// drawHilbert(hilbert, origPixels);
+		// }
 
 
-	itnum++;
-	if (itnum > maxIter) return;
+		drawHilbert(hilbert, origPixels);
+			setTimeout(animateHilbert, 2000, false);	
 
 
-	drawHilbert(hilbert, origPixels);
-
-		setTimeout(animateHilbert, 2000, false);
 	}
 
 	animateHilbert();
@@ -229,13 +247,12 @@ function drawHilbert(hilbert, origPixels) {
 				// 	var c = hiddenCanvas.get(i, j, 1, 1);
 				// 	fill(c);
 				// }
-				// for(var k=0; k<3; k++){
+
 				newImageData.data[n*4*i+4*j+0]=0;
 				newImageData.data[n*4*i+4*j+1]=0;
 				newImageData.data[n*4*i+4*j+2]=0;
 				// }
 				numBlack++;
-				//hiddenCanvas.pixels[i]
 				// rect(j, i, 1, 1);
 			}
 		}
