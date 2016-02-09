@@ -1,9 +1,10 @@
 var hiddenCanvas;
 var visibleCanvas;
 var cnvCtx;
+var hiddenCtx;
 var stateNum = 0
 var pIndex = 0;
-var percentLoadedDiv;
+var percentLoadedSpan;
 var img;
 
 function setup() {
@@ -15,14 +16,15 @@ function setup() {
 
   background(100);
   noStroke();
+  
+  textFont("Courier New");
+  textStyle(BOLD);
+  textSize(16);
 
   // Add an event for when a file is dropped onto the canvas
   visibleCanvas.drop(gotFile);
-  
-  percentLoadedDiv = createDiv(' ');
-  percentLoadedDiv.position(20, windowHeight - 20);
-  percentLoadedDiv.style('background-color', '#22222');
 
+  percentLoadedSpan = select('#percent-num');
   initHilbert(width, height);
 }
 
@@ -36,32 +38,34 @@ function draw() {
     textAlign(CENTER);
     text('Drag an image here.', width/2, height/2);
     noLoop();
-  } else if (stateNum === 1) {
-
-    for (var i = 0; i < 800; i++) {
-      drawNextPixel(pIndex);
-      pIndex += 4;
-      // var i = random
-    }
-
-    if (pIndex >= hiddenCanvas.pixels.length) {
-      stateNum = 2;
-    } else {
-      var percentLoaded = pIndex/hiddenCanvas.pixels.length * 100;
-      percentLoadedDiv.html('Percent loaded: ' + percentLoaded);
-    }
   }
+
+  // else if (stateNum === 1) {
+
+  //   for (var i = 0; i < 800; i++) {
+  //     drawNextPixel(pIndex);
+  //     pIndex += 4;
+  //     // var i = random
+  //   }
+
+  //   if (pIndex >= hiddenCanvas.pixels.length) {
+  //     stateNum = 2;
+  //   } else {
+  //     var percentLoaded = pIndex/hiddenCanvas.pixels.length * 100;
+  //     percentLoadedDiv.html('Percent loaded: ' + percentLoaded);
+  //   }
+  // }
   
-  else if (stateNum === 2) {
-      var percentLoaded = Number(percentLoadedDiv.html().split(':')[1]);
-      if (percentLoaded < 100) {
-        percentLoaded += percentLoaded * 0.00000001;
-        percentLoadedDiv.html('Percent loaded: ' + percentLoaded);
-      } else {
-        percentLoadedDiv.html('Percent loaded: ' + percentLoaded + '9');
-      }
+  // else if (stateNum === 2) {
+  //     var percentLoaded = Number(percentLoadedDiv.html().split(':')[1]);
+  //     if (percentLoaded < 100) {
+  //       percentLoaded += percentLoaded * 0.00000001;
+  //       percentLoadedDiv.html('Percent loaded: ' + percentLoaded);
+  //     } else {
+  //       percentLoadedDiv.html('Percent loaded: ' + percentLoaded + '9');
+  //     }
     
-  }
+  // }
   
 }
 
@@ -85,17 +89,8 @@ function gotFile(file) {
     
     hiddenCanvas.image(img, 0, 0, width, height);
 
-    var ctx = hiddenCanvas.elt.getContext('2d');
-    hiddenCanvas.pixels = ctx.getImageData(0,0,width,height).data;
-
-//hiddenCanvas.pixels is an array with image
-
-    // background(20);
-    // image(img, 0, 0, width, height);
-    // console.log(hiddenCanvas.pixels.length);
-    
-    // stateNum = 1;
-    // loop();
+    hiddenCtx = hiddenCanvas.elt.getContext('2d');
+    hiddenCanvas.pixels = hiddenCtx.getImageData(0,0,width,height).data;
 
     hilbertCurve(hiddenCanvas.pixels);
 
