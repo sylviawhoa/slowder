@@ -3,15 +3,14 @@
 var w;
 var h;
 var hilbert, sw;
-var extra = 0;
 // var itnum = 0;
-var hilbert2ndlast, hilbertlast;
-
+// var hilbert2ndlast, hilbertlast;
 var slowness = 800;
 var height = 512;
 var MAX = Math.log2(height) - 2;  //7 
-var maxIter = Math.log2(height) - 2;  //7
+var extra = 0;
 var percentLoaded = 0;
+var maxits = 30;
 // var basecase = 0;
 
 function initHilbert(_w, _h) {
@@ -142,8 +141,6 @@ function drawUnicornShoe(squareunicornmatrix,hilbert,n,itnum,h,sw){
 	rotateQuadrants(foursmall,hilbert,n);
 //connectshoes
 	size = math.pow(2,itnum);
-
-	// console.log('size is '+ size + '.  MAX is ' + MAX + '.  itnum is ' + itnum);
 	for(var i=0;i <= h/(4*size); i++){
 		var a = h/2-h/(8*size)+i;
 		var b = h/(8*size);
@@ -186,12 +183,7 @@ function displayLeftandRightShoes(squareunicornmatrix,hilbert,n,itnum,h,sw){
 function hilbertCurve(origPixels) {
 	//basecase
 	var itnum = 0;
-	var maxIter = 7;
 	var basecase = 0;
-
-	// squareunicornmatrix = math.zeros(h,h);
-	// hilbert = math.zeros(h,2*sw);
-	// squareunicornmatrix = drawHorseshoe(hilbert,h,sw);
 
 	// animate
 	function animateHilbert() {
@@ -230,8 +222,6 @@ function hilbertCurve(origPixels) {
 					hilbert2ndlast._data[i][j]= hilbert._data[i][j];
 				}
 			}
-			console.log('writing 2nd last  itnum is ' + itnum); 
-
 			itnum++;
 			basecase = 0;
 			
@@ -247,7 +237,7 @@ function hilbertCurve(origPixels) {
 				}
 			}
 			hilbert = displayLeftandRightShoes(squareunicornmatrix,hilbert,h,itnum,h,sw);
-			// drawHilbert(hilbert, origPixels);
+
 		
 			hilbertlast = math.zeros(h,2*sw);
 			for(var i=0; i<h; i++){
@@ -255,21 +245,14 @@ function hilbertCurve(origPixels) {
 					hilbertlast._data[i][j]= hilbert._data[i][j];
 				}
 			}
-			console.log('writing last  itnum is ' + itnum);
 			itnum++;
 
 		}
 		drawHilbert(hilbert, origPixels);
-
-
-
 	    basecase++;
 
-		console.log('itnum' + itnum);
 		
-			
-
-		if(itnum > MAX + 20) return;
+		if(itnum > MAX + maxits) return;
 
 		
 		if (itnum > MAX){
@@ -280,12 +263,11 @@ function hilbertCurve(origPixels) {
 				origPixels = hiddenCtx.getImageData(0,0,width,height).data;
 
 				drawHilbert(hilbert2ndlast, origPixels, itnum);
-				console.log('secondlast ' + itnum);
 			}
 
 			else{
 				drawHilbert(hilbertlast, origPixels, itnum);
-				console.log('last ' + itnum);
+
 			}
 			extra++;
 			itnum++;
@@ -302,15 +284,14 @@ function hilbertCurve(origPixels) {
 
 function drawHilbert(hilbert, origPixels, itnum) {
 	// background(0);
-	
+
+
 	image(img, 0, 0, width, height);
-	// var newPixels = cnvCtx.getImageData(0,0,width,height).data;
 	var newPixels = new Uint8ClampedArray(origPixels);
 	var newImageData = new ImageData(newPixels, width, height);
 
 	noStroke();
 	fill(0, 0, 0);
-
 
 	var m = hilbert.size()[0]; // 512
 	var n = hilbert.size()[1]; // 1024
@@ -333,15 +314,14 @@ function drawHilbert(hilbert, origPixels, itnum) {
 
 	// update percent loaded HTML
 
-	console.log('extra is: ' + extra);
-
-
 	if(extra < 1) {
 		percentLoaded = (100 * (m * n - numBlack) / (m*n)) ;
 	
 	}
 	else{
-		percentLoaded += 100/Math.pow(2,(extra+2));
+		if(extra%2 == 0){
+			percentLoaded += 100/Math.pow(2,2+extra/2);
+		}
 	}
 	 
 
