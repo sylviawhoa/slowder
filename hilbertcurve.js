@@ -10,7 +10,8 @@ var height = 512;
 var MAX = Math.log2(height) - 2;  //7 
 var extra = 0;
 var percentLoaded = 0;
-var maxits = 30;
+var maxits = 50;
+var gifct = 0;
 // var basecase = 0;
 
 function initHilbert(_w, _h) {
@@ -327,12 +328,12 @@ function drawHilbert(hilbert, origPixels, itnum) {
 
 	percentLoadedSpan.html(percentLoaded);	
 
-	// update percent loaded canvas
+	// // update percent loaded canvas
 	// fill(0,255,0);
 	// text('Percent Loaded: ' + percentLoaded + '%', 20, height - 20);
 
-	// saveCanvas('giffinal_' + itnum, 'png');
-
+	// saveCanvas('giffinal_' + gifct, 'png');	
+	// gifct++;
 
 
 	return 'done drawing';
