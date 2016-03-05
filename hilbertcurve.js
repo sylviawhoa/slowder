@@ -10,7 +10,7 @@ var height = 512;
 var MAX = Math.log2(height) - 2;  //7 
 var extra = 0;
 var percentLoaded = 0;
-var maxits = 500;
+var maxits = 100;
 var gifct = 0;
 // var basecase = 0;
 
